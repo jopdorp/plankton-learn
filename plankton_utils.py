@@ -31,8 +31,7 @@ def images(impaths):
        yield cls, image
                
 def scale_images(images, imsize_x=25, imsize_y=25):
-   for cls, impath in images:
-       image = imread(impath, as_grey=True)
+   for cls, image in images:
        yield cls, resize(image, (imsize_x, imsize_y))
 
 def attach_ratio(images):
