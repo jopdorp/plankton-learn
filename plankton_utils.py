@@ -11,7 +11,8 @@ from skimage.transform import resize
 BASE='../train/*'
 
 def classes(base_glob=BASE):
-    return [d.split(os.sep)[-1] for d in glob.glob(base_glob)] 
+    classes = [d.split(os.sep)[-1] for d in glob.glob(base_glob)] 
+    return dict((cls, i) for i, cls in enumerate(pu.classes()))
 
 def train_image_paths(base_glob=BASE):
     for cls_path in glob.glob(base_glob):
