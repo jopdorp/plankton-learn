@@ -8,11 +8,11 @@ from skimage import measure
 from skimage.io import imread
 from skimage.transform import resize
 
-BASE='../train/*'
+BASE='../../train/*'
 
-def classes(base_glob=BASE):
+def get_classes(base_glob=BASE):
     classes = [d.split(os.sep)[-1] for d in glob.glob(base_glob)] 
-    return dict((cls, i) for i, cls in enumerate(pu.classes()))
+    return dict((cls, i) for i, cls in enumerate(classes))
 
 def train_image_paths(base_glob=BASE):
     for cls_path in glob.glob(base_glob):
