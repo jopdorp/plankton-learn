@@ -8,7 +8,7 @@ from skimage import measure
 from skimage.io import imread
 from skimage.transform import resize
 
-BASE='../../train/*'
+BASE='../train/*'
 
 def get_classes(base_glob=BASE):
     classes = [d.split(os.sep)[-1] for d in glob.glob(base_glob)] 
