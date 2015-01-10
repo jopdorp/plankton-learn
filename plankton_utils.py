@@ -23,7 +23,7 @@ def train_image_paths(base_glob=BASE):
 def image_paths(path):
     for path, folder, files in os.walk(path): 
         for f in files:                                                      
-            if f[-4:] == ".jpg":                                             
+            if f[-4:] == ".jpg" or f[-4:] == ".png":                                             
                 yield "{0}{1}{2}".format(path, os.sep, f)
 
 def images(impaths):
