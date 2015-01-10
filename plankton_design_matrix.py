@@ -11,6 +11,7 @@ TEST_SIZE=6067
 TRAIN_SIZE=24269
 IM_SIZE=32
 IM_GLOB="converted_images/*" 
+NUM_CLASSES=121
 
 class PlanktonDDM(dense_design_matrix.DenseDesignMatrix):
 
@@ -25,15 +26,15 @@ class PlanktonDDM(dense_design_matrix.DenseDesignMatrix):
 
         size = TEST_SIZE if which_set == 'test' else TRAIN_SIZE
         if control.get_load_data():
-            topo_view, y = self.read_images(size,
-                                            True if which_set == 'train' else False) 
+            topo_view, y = read_images(IM_GLOB, size, TEST_TRAIN_RANDOM_SEED,
+                                            False if which_set == 'train' else True)
         else:
             topo_view = np.random.rand(size, 32, 32)
             y = np.random.randint(0, 10, (size, 1))
 
         super(PlanktonDDM, self).__init__(topo_view=topo_view, y=y,
                                     axes=['b', 0, 1, 'c'],
-                                    y_labels=len(np.unique(y)))
+                                    y_labels=NUM_CLASSES)
 
         if start is not None:
             assert start >= 0
@@ -52,30 +53,29 @@ class PlanktonDDM(dense_design_matrix.DenseDesignMatrix):
             assert self.y.shape[0] == stop - start
 
 
-    def read_images(self, size, take_from_end):
-        classes = pu.get_classes(IM_GLOB)
-         
-        imlab = list(pu.images(pu.train_image_paths(IM_GLOB)))
-        rnd.seed(TEST_TRAIN_RANDOM_SEED) 
-        rnd.shuffle(imlab)
-        if take_from_end:
-          imlab = imlab[-size:]
-        else:
-          imlab = imlab[:size]
+def read_images(glob, size, seed, take_from_end):
+    classes = pu.get_classes(glob)
+     
+    imlab = list(pu.images(pu.train_image_paths(glob)))
+    rnd.seed(seed) 
+    rnd.shuffle(imlab)
+    if take_from_end:
+      imlab = imlab[-size:]
+    else:
+      imlab = imlab[:size]
+
+    images = np.array([i for _, i in imlab])[:,:,:,np.newaxis]
+    labels = np.array([classes[l] for l, _ in imlab])[:,np.newaxis] 
     
-        images = np.array([i for _, i in imlab])[:,:,:,np.newaxis]
-        labels = np.array([classes[l] for l, _ in imlab])[:,np.newaxis] 
-        
-        images = self.standardize(images)
-        
-        return images, labels
-        
-        
-    def standardize(self, images):
-        mean = images.mean(axis=0)
-        std = images.std(axis=0)
-        
-        return (images - mean) / (0.0001 + std) 
-        
+    images = standardize(images)
+    
+    return images, labels
+    
+def standardize(images):
+    mean = images.mean(axis=0)
+    std = images.std(axis=0)
+    
+    return (images - mean) / (0.0001 + std) 
+    
         
          
