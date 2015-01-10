@@ -63,8 +63,17 @@ class PlanktonDDM(dense_design_matrix.DenseDesignMatrix):
         else:
           imlab = imlab[:size]
            
-        images = np.array([i for _, i in imlab])[:,:,:,np.newaxis]
+        images = np.array([self.standardize(i) for _, i in imlab])[:,:,:,np.newaxis]
         labels = np.array([classes[l] for l, _ in imlab])[:,np.newaxis]
         
         return images, labels
+        
+        
+    def standardize(self, image):
+        mean = image.mean()
+        std = image.std()
+        
+        return (image - mean) / std 
+        
+        
          
