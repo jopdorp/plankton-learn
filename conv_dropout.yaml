@@ -7,14 +7,14 @@
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: %(batch_size)i,
         input_space: !obj:pylearn2.space.Conv2DSpace {
-            shape: [32, 32],
+            shape: &window_shape [32, 32],
             num_channels: 1
         },
         layers: [ !obj:pylearn2.models.mlp.ConvRectifiedLinear {
                      layer_name: 'h2',
                      output_channels: %(output_channels_h2)i,
                      irange: .005,
-                     kernel_shape: [5, 5],
+                     kernel_shape: [8, 8],
                      pool_shape: [4, 4],
                      pool_stride: [2, 2],
                      max_kernel_norm: 1.9365
@@ -22,11 +22,11 @@
                      layer_name: 'h3',
                      output_channels: %(output_channels_h3)i,
                      irange: .005,
-                     kernel_shape: [5, 5],
+                     kernel_shape: [8, 8],
                      pool_shape: [4, 4],
                      pool_stride: [2, 2],
                      max_kernel_norm: 1.9365
-                 }, !obj:pylearn2.models.mlp.Softmax {
+                 },!obj:pylearn2.models.mlp.Softmax {
                      max_col_norm: 1.9365,
                      layer_name: 'y',
                      n_classes: 121,
@@ -35,7 +35,7 @@
                 ],
     },
     algorithm: !obj:pylearn2.training_algorithms.sgd.SGD {
-        learning_rate: .006,
+        learning_rate: .1,
         learning_rule: !obj:pylearn2.training_algorithms.learning_rule.Momentum {
             init_momentum: .5,
         },
@@ -43,7 +43,7 @@
         monitor_iteration_mode: 'even_sequential',
         monitoring_dataset:
             {
-                'valid' : !obj:plankton_design_matrix.PlanktonDDM {
+                'valid' : &valid !obj:plankton_design_matrix.PlanktonDDM {
                               which_set: 'train',
                               start: %(train_stop)i,
                               stop:  %(valid_stop)i
@@ -58,34 +58,17 @@
             input_include_probs: { 'h2' : .8 },
             input_scales: { 'h2': 1. }
         },
-
-        termination_criterion: !obj:pylearn2.termination_criteria.And {
-            criteria: [
-                !obj:pylearn2.termination_criteria.MonitorBased {
-                    channel_name: "valid_y_misclass",
-                    prop_decrease: 0.,
-                    N: 100
-                },
-                !obj:pylearn2.termination_criteria.EpochCounter {
+        termination_criterion: !obj:pylearn2.termination_criteria.EpochCounter {
                     max_epochs: %(max_epochs)i
-                },
-            ]
         },
-        update_callbacks: !obj:pylearn2.training_algorithms.sgd.ExponentialDecay {
-            decay_factor: 1.00004,
-            min_lr: .000001
-        }
     },
-    extensions:
-        [ !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
-             channel_name: 'valid_y_misclass',
-             save_path: "%(save_path)s/convolutional_network_best.pkl"
-        }, !obj:pylearn2.training_algorithms.learning_rule.MomentumAdjustor {
+    extensions: [
+        !obj:pylearn2.training_algorithms.learning_rule.MomentumAdjustor {
             start: 1,
             saturate: 250,
-            final_momentum: .7
+            final_momentum: .65
         }
-    ]
+    ],
 }
 
 
