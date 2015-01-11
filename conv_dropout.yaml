@@ -1,6 +1,7 @@
 !obj:pylearn2.train.Train {
-    dataset: &train !obj:plankton_design_matrix.PlanktonDDM {
-        which_set: 'train',
+    dataset: &train !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {             
+        preprocessed_dataset: !pkl: "zca_images/train.pkl",
+        preprocessor: !pkl: "zca_images/preprocessor.pkl",
         start: 0,
         stop: %(train_stop)i
     },
@@ -43,13 +44,15 @@
         monitor_iteration_mode: 'even_sequential',
         monitoring_dataset: {
                 'train' : *train,
-                'valid' : &valid !obj:plankton_design_matrix.PlanktonDDM {
-                    which_set: 'train',
+                'valid' : &valid !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {  
+                    preprocessed_dataset: !pkl: "zca_images/train.pkl",                      
+                    preprocessor: !pkl: "zca_images/preprocessor.pkl",  
                     start: %(train_stop)i,
                     stop:  24269
                 },
-                'test'  : !obj:plankton_design_matrix.PlanktonDDM {
-                    which_set: 'test',
+                'test'  : !obj:pylearn2.datasets.zca_dataset.ZCA_Dataset {  
+                    preprocessed_dataset: !pkl: "zca_images/test.pkl",                      
+                    preprocessor: !pkl: "zca_images/preprocessor.pkl",  
                     start: 0,
                     stop: 6067
                 }
