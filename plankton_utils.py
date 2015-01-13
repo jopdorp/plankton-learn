@@ -1,10 +1,10 @@
 import glob
 import os
+import math
 
 import numpy as np
 
-from skimage import morphology
-from skimage import measure
+from skimage import morphology, measure, transform
 from skimage.io import imread
 from skimage.transform import resize
 
@@ -28,7 +28,7 @@ def image_paths(path):
 
 def images(impaths):
    for cls, impath in impaths:                                                    
-       image = imread(impath, as_grey=True)
+       image = imread(impath, as_grey=True) / 255.0
        yield cls, image
                
 def scale_images(images, imsize_x=25, imsize_y=25):
@@ -50,15 +50,15 @@ def min_max_region_ratio(image):
     label_list = imagethr*label_list
     label_list = label_list.astype(int)
     region_list = measure.regionprops(label_list)
-    maxregion = getLargestRegion(region_list, label_list, imagethr)
+    maxregion = largest_region(region_list, label_list, imagethr)
             
     # guard against cases where the segmentation fails by providing zeros
     ratio = 0.0
     if ((not maxregion is None) and  (maxregion.major_axis_length != 0.0)):
         ratio = maxregion.minor_axis_length*1.0 / maxregion.major_axis_length
-    return ratio
+    return ratio, maxregion
 
-def getLargestRegion(props, labelmap, imagethres):
+def largest_region(props, labelmap, imagethres):
     regionmaxprop = None
     for regionprop in props:
         # check to see if the region is at least 50% nonzero
@@ -70,3 +70,10 @@ def getLargestRegion(props, labelmap, imagethres):
             regionmaxprop = regionprop
     return regionmaxprop
 
+def orientate_image(im):
+    ratio, mmrr = min_max_region_ratio(im)
+    if mmrr and ratio > 0.0:
+        orientation = mmrr.orientation * 180 / math.pi
+        return transform.rotate(im, -orientation, resize=True, cval=1.0)
+    else:
+        return im
