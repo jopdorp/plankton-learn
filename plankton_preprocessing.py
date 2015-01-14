@@ -12,9 +12,10 @@ CONVERTED_IMAGES_DIR="converted_images"
 OUTPUT_DIR="zca_images"
 
 def convert_image(im):
-    oriented = resize(pu.orientate_image(im), (32, 32))
+    #oriented = resize(pu.orientate_image(im), (32, 32))
     #rot90 = rotate(oriented, 90, resize=True, cval=1.0)
-    return (oriented,) #rot90
+    #return oriented, rot90
+    return (resize(im, (32, 32)),)
 
 if not os.path.exists(CONVERTED_IMAGES_DIR):
     os.makedirs(CONVERTED_IMAGES_DIR)
