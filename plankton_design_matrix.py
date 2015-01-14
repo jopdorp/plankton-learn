@@ -8,7 +8,7 @@ from pylearn2.datasets import dense_design_matrix
 
 TEST_TRAIN_RANDOM_SEED=12345
 
-TOT_TRAIN=60672
+TOT_TRAIN=30336
 TEST_SIZE=int(TOT_TRAIN * 0.2)
 TRAIN_SIZE=TOT_TRAIN - TEST_SIZE
 IM_SIZE=32

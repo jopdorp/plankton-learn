@@ -68,7 +68,7 @@
     extensions: [
         !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
             channel_name: 'valid_y_misclass',
-            save_path: "results_convolutional_with_dropout_and_aug_best.pkl"
+            save_path: "results_convolutional_with_dropout_rotated_two_ways_best.pkl"
         },
         !obj:pylearn2.training_algorithms.learning_rule.MomentumAdjustor {
             start: 1,
@@ -81,7 +81,7 @@
             decay_factor: .01
         }
     ],
-    save_path: "./results_convolutional_with_dropout_and_aug.pkl",
+    save_path: "./results_convolutional_with_dropout_rotated_tow_ways.pkl",
     save_freq: 1
 }
 
